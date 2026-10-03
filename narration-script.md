@@ -1,6 +1,6 @@
 # Narration script
 
-**0 of 94 lines recorded** (letter sounds: 0 of 25).
+**0 of 95 lines recorded** (letter sounds: 0 of 26).
 
 How to add a recording (details in README.md):
 1. Record the line (iPhone Voice Memos is fine) and save it into `recordings-raw/`.
@@ -46,6 +46,7 @@ The computer voice can't say pure sounds, so these matter most. Say the
 | `snd.z` | **zzz** | Hold it like a buzzing bee, about a second. | TO RECORD |
 | `snd.j` | **j** | Short and crisp. No 'juh'. | TO RECORD |
 | `snd.y` | **y (as in yes)** | Short, the start of 'yes'. No 'yuh'. | TO RECORD |
+| `snd.q` | **kw (as in queen)** | q nearly always comes with u, so say 'kw' as at the start of 'queen'. Short, no 'uh'. | TO RECORD |
 
 ## 2. Words
 Say each word normally and clearly, like reading it to him. Don't stretch it out:

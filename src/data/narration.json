@@ -98,5 +98,7 @@
   "word.six": { "text": "six", "recorded": false },
   "word.zip": { "text": "zip", "recorded": false },
   "word.jet": { "text": "jet", "recorded": false },
-  "word.yum": { "text": "yum", "recorded": false }
+  "word.yum": { "text": "yum", "recorded": false },
+
+  "snd.q": { "text": "kw (as in queen)", "speak": "kw", "note": "q nearly always comes with u, so say 'kw' as at the start of 'queen'. Short, no 'uh'.", "recorded": false }
 }

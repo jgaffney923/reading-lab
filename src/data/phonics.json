@@ -26,7 +26,8 @@
     "x": { "say": "ks (as at the end of box)", "speak": "ks", "how": "The 'ks' at the end of 'box'. Short.", "as": "box" },
     "z": { "say": "zzz", "speak": "zzz", "how": "Hold it like a buzzing bee, about a second.", "as": "zip" },
     "j": { "say": "j", "speak": "juh", "how": "Short and crisp. No 'juh'.", "as": "jet" },
-    "y": { "say": "y (as in yes)", "speak": "yuh", "how": "Short, the start of 'yes'. No 'yuh'.", "as": "yum" }
+    "y": { "say": "y (as in yes)", "speak": "yuh", "how": "Short, the start of 'yes'. No 'yuh'.", "as": "yum" },
+    "q": { "say": "kw (as in queen)", "speak": "kw", "how": "q nearly always comes with u, so say 'kw' as at the start of 'queen'. Short, no 'uh'.", "as": "queen" }
   },
 
   "sets": [
@@ -36,7 +37,7 @@
       "words": ["sad", "mad", "dog", "pig", "cat", "cap", "can", "pot", "kid"] },
     { "letters": ["e", "u", "h", "b", "r", "f"],
       "words": ["sun", "nut", "red", "hen", "ten", "pen", "bed", "bus", "bug", "mug", "hat", "bat", "rat", "tub", "hug", "run"] },
-    { "letters": ["l", "w", "v", "x", "z", "j", "y"],
+    { "letters": ["l", "w", "v", "x", "z", "j", "y", "q"],
       "words": ["leg", "lip", "log", "lab", "web", "van", "box", "fox", "six", "zip", "jet", "yum"] }
   ],
 

@@ -62,6 +62,7 @@ The child should never feel wrong. But in phonics, if a wrong tap moves forward 
 - **Hold the sounds you can hold** (m, s, f, l, n, r, v, z and the vowels) for about a second. Held sounds blend easily.
 - **Short vowels only** at first: a as in ant, e as in egg, i as in itch, o as in octopus, u as in up.
 - x says /ks/ (box, fox, six). It's one tile with one recording.
+- q says /kw/, since it nearly always comes with u (queen). No q words until set 5, where "qu" is taught as a pair.
 - **Letter names are never used** in the game during M1–M3. Everything is sounds.
 
 ### 5.5 Teaching order (scope and sequence)
@@ -72,7 +73,7 @@ Based on the Jolly Phonics / SATPIN order, adjusted so early words can be pictur
 | 1 | s a t p i n m | map, nap, tap, pan, pin, man, ant |
 | 2 | d o g c k | dog, pig, cat, cap, can, pot, kid, sad, mad |
 | 3 | e u h b r f | bed, hen, pen, sun, bus, bug, hat, bat, nut, tub |
-| 4 | l w v x z j y | log, leg, lip, web, van, box, fox, six, zip, lab |
+| 4 | l w v x z j y q | log, leg, lip, web, van, box, fox, six, zip, lab (q is taught as its sound "kw", as in queen; qu words come with digraphs) |
 | 5 | digraphs sh ch th ck | fish, ship, chick, duck, sock, bath |
 | 6 | blends | frog, crab, drum, flag, sled, tent, hand, milk |
 | 7 | heart words | the, a, I, is, to, of, and, my (taught as "heart words": the part that doesn't sound out is the part to learn by heart) |
@@ -163,7 +164,7 @@ Extra for this app: the game waits for the Andika font to load before drawing an
 |---|-----------|--------------------|
 | M0 | Shell | Tap to start, home screen, installable, offline, Andika font, deployed to GitHub Pages |
 | M1 | Sound Lab + Word Mixer + experiments | Both games playable end to end for sets 1–4; feedback follows 5.3; set progression and parent corner work; first-visit walkthrough; stand-in voice for instructions and words |
-| M1.5 | **Record the sounds** | In-app recorder (⚙️ → Record sounds) built. Parent records all 25 letter sounds on the iPad before the first kid test. Without them the stand-in voice mispronounces sounds. |
+| M1.5 | **Record the sounds** | In-app recorder (⚙️ → Record sounds) built. Parent records all 26 letter sounds on the iPad before the first kid test. Without them the stand-in voice mispronounces sounds. |
 | M2 | Word Builder | Drag-to-spell for sets 1–4, gentle float-back, blend on completion, stickers |
 | M3 | Kid-test pass | Play with him for a week, log issues, fix the top 5, tune round lengths and the move-on rule |
 | M4 | Robot Reader | Phrases and 3–6 word sentences with robot actions; heart words a, the, is |
