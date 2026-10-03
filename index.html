@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Reading Lab">
+  <meta name="theme-color" content="#eaf4ff">
+  <title>Reading Lab</title>
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+  <link rel="icon" href="assets/icons/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <style>
+    /* Andika: made for beginning readers (one-story a and g, clear b/d/p/q). */
+    @font-face {
+      font-family: 'Andika';
+      src: url('assets/fonts/andika-latin-700-normal.woff2') format('woff2');
+      font-weight: 700;
+      font-display: block;
+    }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: #eaf4ff;
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior: none;
+    }
+    #game {
+      position: fixed;
+      inset: 0;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      touch-action: none;
+    }
+    /* iOS ignores the manifest orientation lock, so ask for landscape with a picture. */
+    #rotate {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      background: #eaf4ff;
+      align-items: center;
+      justify-content: center;
+    }
+    #rotate div {
+      font-size: 160px;
+      animation: turn 2.4s ease-in-out infinite;
+    }
+    @keyframes turn {
+      0%, 30% { transform: rotate(0deg); }
+      60%, 100% { transform: rotate(-90deg); }
+    }
+    @media (orientation: portrait) {
+      #rotate { display: flex; }
+    }
+  </style>
+</head>
+<body>
+  <div id="game"></div>
+  <div id="rotate" aria-hidden="true"><div>📱</div></div>
+
+  <script src="vendor/phaser.min.js"></script>
+  <script type="module" src="src/main.js"></script>
+  <script>
+    // Skip the service worker on localhost so edits show up on reload.
+    // Add ?sw=1 to the URL to test offline mode locally.
+    const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
+    if ('serviceWorker' in navigator && (!isLocal || location.search.includes('sw=1'))) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>

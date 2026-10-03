@@ -1,0 +1,51 @@
+{
+  "vowels": ["a", "e", "i", "o", "u"],
+
+  "sounds": {
+    "s": { "say": "sss", "speak": "sss", "how": "Hold it like a snake, about a second. No 'uh'.", "as": "sun" },
+    "a": { "say": "a (as in ant)", "speak": "aah", "how": "Short a, the start of 'ant'. Hold it about a second.", "as": "ant" },
+    "t": { "say": "t", "speak": "tuh", "how": "Short and crisp, just a puff of air. No 'tuh'.", "as": "tap" },
+    "p": { "say": "p", "speak": "puh", "how": "Short and crisp, just a puff of air. No 'puh'.", "as": "pan" },
+    "i": { "say": "i (as in itch)", "speak": "ih", "how": "Short i, the start of 'itch'. Hold it about a second.", "as": "in" },
+    "n": { "say": "nnn", "speak": "nnn", "how": "Hold it, humming through your nose, about a second.", "as": "nap" },
+    "m": { "say": "mmm", "speak": "mmm", "how": "Hold it, lips together, about a second.", "as": "map" },
+    "d": { "say": "d", "speak": "duh", "how": "Short and crisp. No 'duh'.", "as": "dog" },
+    "o": { "say": "o (as in octopus)", "speak": "ah", "how": "Short o, the start of 'octopus'. Hold it about a second.", "as": "on" },
+    "g": { "say": "g", "speak": "guh", "how": "Short and crisp, from the back of the throat. No 'guh'.", "as": "gas" },
+    "c": { "say": "c (as in cat)", "speak": "kuh", "how": "The hard 'k' sound, short and crisp. Record the same as k.", "as": "cat" },
+    "k": { "say": "k", "speak": "kuh", "how": "Short and crisp. No 'kuh'.", "as": "kid" },
+    "e": { "say": "e (as in egg)", "speak": "eh", "how": "Short e, the start of 'egg'. Hold it about a second.", "as": "egg" },
+    "u": { "say": "u (as in up)", "speak": "uh", "how": "Short u, the start of 'up'. Hold it about a second.", "as": "up" },
+    "h": { "say": "h", "speak": "huh", "how": "Just a breath out, like fogging a window. No 'huh'.", "as": "hat" },
+    "b": { "say": "b", "speak": "buh", "how": "Short and crisp. No 'buh'.", "as": "bus" },
+    "r": { "say": "rrr", "speak": "rrr", "how": "Hold it like a growl, about a second. Not 'er' or 'ruh'.", "as": "red" },
+    "f": { "say": "fff", "speak": "fff", "how": "Hold it, top teeth on your lip, about a second.", "as": "fox" },
+    "l": { "say": "lll", "speak": "lll", "how": "Hold it, tongue behind your top teeth, about a second. Not 'luh'.", "as": "leg" },
+    "w": { "say": "w", "speak": "wuh", "how": "Round lips, short. No 'wuh'.", "as": "web" },
+    "v": { "say": "vvv", "speak": "vvv", "how": "Hold it, a buzzy 'f', about a second.", "as": "van" },
+    "x": { "say": "ks (as at the end of box)", "speak": "ks", "how": "The 'ks' at the end of 'box'. Short.", "as": "box" },
+    "z": { "say": "zzz", "speak": "zzz", "how": "Hold it like a buzzing bee, about a second.", "as": "zip" },
+    "j": { "say": "j", "speak": "juh", "how": "Short and crisp. No 'juh'.", "as": "jet" },
+    "y": { "say": "y (as in yes)", "speak": "yuh", "how": "Short, the start of 'yes'. No 'yuh'.", "as": "yum" }
+  },
+
+  "sets": [
+    { "letters": ["s", "a", "t", "p", "i", "n", "m"],
+      "words": ["ant", "map", "man", "nap", "tap", "pan", "pin"] },
+    { "letters": ["d", "o", "g", "c", "k"],
+      "words": ["sad", "mad", "dog", "pig", "cat", "cap", "can", "pot", "kid"] },
+    { "letters": ["e", "u", "h", "b", "r", "f"],
+      "words": ["sun", "nut", "red", "hen", "ten", "pen", "bed", "bus", "bug", "mug", "hat", "bat", "rat", "tub", "hug", "run"] },
+    { "letters": ["l", "w", "v", "x", "z", "j", "y"],
+      "words": ["leg", "lip", "log", "lab", "web", "van", "box", "fox", "six", "zip", "jet", "yum"] }
+  ],
+
+  "pictures": {
+    "ant": "🐜", "map": "🗺️", "man": "👨", "nap": "😴", "tap": "🚰", "pan": "🍳", "pin": "📌",
+    "sad": "😢", "mad": "😠", "dog": "🐶", "pig": "🐷", "cat": "🐱", "cap": "🧢", "can": "🥫", "pot": "🍲", "kid": "🧒",
+    "sun": "☀️", "nut": "🥜", "red": "🔴", "hen": "🐔", "ten": "🔟", "pen": "🖊️", "bed": "🛏️", "bus": "🚌",
+    "bug": "🐛", "mug": "☕", "hat": "🎩", "bat": "🦇", "rat": "🐀", "tub": "🛁", "hug": "🤗", "run": "🏃",
+    "leg": "🦵", "lip": "👄", "log": "🪵", "lab": "🧪", "web": "🕸️", "van": "🚐", "box": "📦", "fox": "🦊",
+    "six": "6️⃣", "zip": "🤐", "jet": "✈️", "yum": "😋"
+  }
+}

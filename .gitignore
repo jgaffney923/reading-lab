@@ -1,0 +1,4 @@
+# raw recordings before conversion
+*.wav
+# Original phone recordings (kept locally, not published)
+recordings-raw/
