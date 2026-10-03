@@ -28,3 +28,11 @@ Not yet tested on the iPad (including the real microphone and permission prompt)
 - c and k never appear together as Sound Lab choices (same sound).
 - "tin" dropped (its picture looks like "can"); "sip" dropped (picture reads as "cup").
 - The 💡 hint sounds the word out but never says the word.
+- q added (2026-10-03) as the sound "kw" at the end of set 4, so all 26 letters can be learned and recorded. No q words until "qu" is taught with digraphs.
+
+## Where the letter sounds come from (researched 2026-10-03)
+Decision: **the owner records them in the app** (⚙️ → Record sounds). No complete, freely licensed set of pure, isolated letter sounds was found. Don't add third-party audio to this repo without checking its license: the repo is public.
+- **Wikipedia/Wikimedia Commons** IPA samples (CC BY-SA 3.0, one is public domain): only the short vowels (a æ, e ɛ, i ɪ, o ɑ, u ʌ, ~0.6 s each, files like `Near-open front unrounded vowel.ogg`) and probably v are isolated. The other consonants are recorded inside syllables ("sa asa", "ta ata"), so they're unusable. No x or q. Possible use: default vowels with a credits line, replaced by home recordings. Not done.
+- **Freesound** "English Phonemes" pack by margo_heston (pack 12249): only 12 sounds left, CC BY-NC 4.0; covers v, z, x ("kss") and w, plus y, but "Wuh"/"Yyuh" have an added "uh". "letters_phonemes" by drummy (CC0) is one 51 s alphabet recording, probably letter names.
+- **Not usable** (copyrighted, or terms forbid extraction): Yellow Door free phonics MP3 (British, no reuse terms), Phonicademy, PhonicPal (GitHub, all rights reserved).
+- **Untried option:** generate sounds with Kokoro (open-source TTS, Apache-2.0) and cut phonemes out with praat-parselmouth, as PhonicPal did. Held sounds would likely be fine; stops (t, p, k) likely robotic. Only worth trying if the owner asks.

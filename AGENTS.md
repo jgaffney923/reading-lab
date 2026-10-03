@@ -2,7 +2,7 @@
 
 A reading game for a 5-year-old. Read these before changing anything:
 1. **PLAN.md**: the design, teaching approach (section 5), milestones and rules.
-2. **STATUS.md**: where things stand and what's next.
+2. **STATUS.md**: where things stand and what's next. Update it at the end of every work session: the owner switches between Claude Code and GitHub Copilot on this project, and STATUS.md is the hand-off between them.
 
 The rules that matter most:
 - **Teaching:** letters before pictures; pure sounds; only words he can sound out with the letters he has (PLAN.md sections 5 and 11). Run `node tools/check-content.mjs` after editing `src/data/phonics.json` or `src/data/narration.json`.
