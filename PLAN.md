@@ -165,6 +165,7 @@ Extra for this app: the game waits for the Andika font to load before drawing an
 | M0 | Shell | Tap to start, home screen, installable, offline, Andika font, deployed to GitHub Pages |
 | M1 | Sound Lab + Word Mixer + experiments | Both games playable end to end for sets 1–4; feedback follows 5.3; set progression and parent corner work; first-visit walkthrough; stand-in voice for instructions and words |
 | M1.5 | **Record the sounds** | In-app recorder (⚙️ → Record sounds) built. Parent records all 26 letter sounds on the iPad before the first kid test. Without them the stand-in voice mispronounces sounds. |
+| M1.7 | **Farm theme** | Science lab replaced by the family's hens (section 15): hen guide, eggs instead of Lab Energy, coop on the home screen that unlocks a hen per letter set |
 | M2 | Word Builder | Drag-to-spell for sets 1–4, gentle float-back, blend on completion, stickers |
 | M3 | Kid-test pass | Play with him for a week, log issues, fix the top 5, tune round lengths and the move-on rule |
 | M4 | Robot Reader | Phrases and 3–6 word sentences with robot actions; heart words a, the, is |
@@ -209,3 +210,28 @@ Every milestone ends with a short test with him before the next starts. Each mil
 - Speech recognition, accounts, cloud sync, multiple child profiles.
 - Letter names and capitals (later, after blending is solid).
 - Handwriting.
+
+## 15. Farm theme: our hens (decided 2026-10-04)
+The owner chose to **replace the science-lab theme** with the family's 8 real hens. (Peppa Pig was considered and ruled out: it's licensed and the site is public.) Sections 1, 8.6 and 12 still describe the lab; update them when this is built.
+
+**The hens** are already drawn, as code-generated SVG in `src/art/chickens.js`; the owner approved the looks. Preview: `node tools/make-chicken-preview.mjs`, then open `chicken-preview.html` (git-ignored). Load into Phaser with `this.load.svg(key, chickenDataURI(id), { width, height })`.
+
+| Hen | Breed | Look |
+|---|---|---|
+| Gertrude | Prairie Bluebell Egger | Head hen (gold crown). Honey neck, tan body, blue-grey wing, silver tail |
+| Oreo | Barred Rock | Black and white mixed together (not stripes) |
+| Bella | Lavender Orpington | Round, fluffy, grey |
+| Marsala | Buff Orpington | Round, fluffy, golden |
+| Tina | White-crested Black Polish | Small, black, white pom-pom crest |
+| Luna | Black Jersey Giant | Tallest, black |
+| Rhoda | Rhode Island Red | Red-brown, black tail |
+| Harriet | Australorp | Round, black |
+
+**How the theme works**
+- **Hen guide:** one hen leads each round. She points at letters, bobs her head when he's right, and clucks along on the "let's listen together" path (section 5.3 still applies; no sad chickens).
+- **Eggs replace Lab Energy:** one egg per word or sound in a round, filling a nest. A full nest is the reward moment (replaces the experiments): an egg hatches a chick, the hens dance, a feather burst, and so on.
+- **The coop:** the home screen becomes a coop and yard. Gertrude is there from the start, and each letter set he moves up to adds another hen. Tapping a hen makes her cluck or do a little animation. There are 8 hens and 4 sets for now, so later sets (M5) or milestones unlock the rest.
+- **Words:** hen, egg, peck, nest and similar are good picture words, but only add them when the letters he has can spell them (sections 5.5 and 11; run `tools/check-content.mjs`).
+- **Language:** replace the lab phrases ("Nice experimenting!", "Awesome, scientist!") with farm ones in `narration.json`, and update `narration-script.md` so the owner can record them.
+
+**Still to decide when building:** new names for Sound Lab and Word Mixer, the app name and icon (a hen instead of a flask), and which hen guides which game.

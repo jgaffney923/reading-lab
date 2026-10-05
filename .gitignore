@@ -2,3 +2,4 @@
 *.wav
 # Original phone recordings (kept locally, not published)
 recordings-raw/
+chicken-preview.html
