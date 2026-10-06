@@ -1,4 +1,4 @@
-# Status (last updated 2026-10-03)
+# Status (last updated 2026-10-06)
 
 ## Where things stand
 - **Plan** written (PLAN.md), based on the owner's original AGENTS.md draft plus review changes: blending as the core mechanic, letters before pictures, "always end with the right answer" feedback instead of "every answer moves forward", a fixed teaching order (4 letter sets, 44 picturable words), one reward currency (Lab Energy), quiet mastery tracking, no speech recognition.
@@ -10,6 +10,12 @@
   - Experiments: rocket, volcano, potion, taking turns; play again or go home.
   - Set progression (8 of last 10 first tries + 6 words seen), parent corner with easier/harder and a needs-practice list.
 - **In-app recorder** (2026-10-03): ⚙️ panel → Record sounds. Grid of the 26 letter sounds (and an optional Words tab), record / listen / next, automatic trim and volume, saved in the iPad's IndexedDB and used by the game immediately (`src/systems/recordings.js`, `src/scenes/RecorderScene.js`).
+- **Bug fixes (2026-10-06)**, release `0.2.2 (fixes)`, cache version 5:
+  - **Sound Lab was stuck on every visit after the first**: no letters appeared. `next()` checked `isActive()`, which is false while `create()` runs, so it only worked on the first visit (when the intro plays first).
+  - Leaving Sound Lab mid-turn (🏠) no longer carries its lines ("Let's listen again", praise) onto the home screen.
+  - Letter tiles no longer get stuck partway up after quick taps (overlapping hop animations).
+  - The service worker downloads files fresh on a new version (`cache: 'reload'`), so an update right after a deploy can't store old files. Same fix in chemistry-app.
+  - New `tools/browser-check.mjs`: runs these checks in a real browser (needs Playwright installed globally: `npm install -g playwright`; `PW_CHANNEL=msedge` to use Edge). Run it after changing game code.
 - Repo: https://github.com/jgaffney923/reading-lab (public, same noreply commit email as chemistry-app). GitHub Pages: https://jgaffney923.github.io/reading-lab/
 
 ## Tested

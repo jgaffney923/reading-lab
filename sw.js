@@ -2,7 +2,7 @@
 // Run `node tools/update-sw.mjs` before each deploy: it rewrites the file list
 // below and bumps CACHE_VERSION so iPads pick up the new files.
 
-const CACHE_VERSION = 4;
+const CACHE_VERSION = 5;
 const CACHE_NAME = `reading-lab-v${CACHE_VERSION}`;
 
 // PRECACHE-START
@@ -15,6 +15,7 @@ const PRECACHE = [
   'assets/icons/icon-512.png',
   'index.html',
   'manifest.webmanifest',
+  'src/art/chickens.js',
   'src/data/narration.json',
   'src/data/phonics.json',
   'src/layout.js',
@@ -46,7 +47,9 @@ const PRECACHE = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE))
+      // cache: 'reload' skips the browser's HTTP cache (GitHub Pages lets it keep
+      // files for 10 minutes), so a new version never stores the old files.
+      .then((cache) => cache.addAll(PRECACHE.map((url) => new Request(url, { cache: 'reload' }))))
       .then(() => self.skipWaiting())
   );
 });

@@ -51,9 +51,14 @@ export function makeTile(scene, x, y, letter, { w = 260, h = 300, onTap } = {}) 
   tile.letter = letter;
   addGlow(scene, tile, w, h);
   if (onTap) makeTappable(scene, tile, w, h, onTap);
-  // A quick hop, for when its sound plays.
+  // A quick hop, for when its sound plays. A hop already under way is stopped
+  // and the tile put back first: a yoyo returns to wherever it started, so
+  // overlapping hops from quick taps would leave the tile stuck up in the air.
+  let hopping = null;
   tile.hop = () => {
-    scene.tweens.add({ targets: tile, y: y - 40, duration: 140, yoyo: true, ease: 'Quad.easeOut' });
+    hopping?.stop();
+    tile.y = y;
+    hopping = scene.tweens.add({ targets: tile, y: y - 40, duration: 140, yoyo: true, ease: 'Quad.easeOut' });
   };
   return tile;
 }

@@ -35,14 +35,15 @@ export default class SoundLabScene extends Phaser.Scene {
 
     if (!tipShown('soundlab')) {
       markTipShown('soundlab');
-      say(this, 'soundlab.intro').then(() => this.next());
+      say(this, 'soundlab.intro').then(() => this.sys.isActive() && this.next());
     } else {
       this.next();
     }
   }
 
+  // Not guarded with isActive(): while create() runs the scene isn't "running"
+  // yet, so a guard here would leave the screen empty. Callers check instead.
   next() {
-    if (!this.sys.isActive()) return;
     this.tiles.forEach((t) => t.destroy());
     this.target = this.letters[this.index];
     this.firstTry = true;
@@ -85,10 +86,12 @@ export default class SoundLabScene extends Phaser.Scene {
     this.firstTry = false;
     tile.hop();
     await say(this, sndId(tile.letter));
+    if (!this.sys.isActive()) return;
     const target = this.tiles.find((t) => t.letter === this.target);
     target.glow(true);
     await sayAll(this, ['soundlab.listen', sndId(this.target)]);
-    if (this.sys.isActive()) this.state = 'retry';
+    if (!this.sys.isActive()) return;
+    this.state = 'retry';
   }
 
   async success(tile) {
@@ -101,6 +104,7 @@ export default class SoundLabScene extends Phaser.Scene {
     this.tiles.filter((t) => t !== tile).forEach((t) => this.tweens.add({ targets: t, alpha: 0.25, duration: 300 }));
     this.energy.fill(this.index);
     await say(this, sndId(this.target));
+    if (!this.sys.isActive()) return;
     await praise(this, this.firstTry);
     if (!this.sys.isActive()) return;
 
