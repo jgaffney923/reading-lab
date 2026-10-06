@@ -16,6 +16,9 @@
   - Letter tiles no longer get stuck partway up after quick taps (overlapping hop animations).
   - The service worker downloads files fresh on a new version (`cache: 'reload'`), so an update right after a deploy can't store old files. Same fix in chemistry-app.
   - New `tools/browser-check.mjs`: runs these checks in a real browser (needs Playwright installed globally: `npm install -g playwright`; `PW_CHANNEL=msedge` to use Edge). Run it after changing game code.
+- **Recorder and checks (2026-10-06)**, release `0.2.3 (mic)`, cache version 6:
+  - The recorder opens the microphone for each recording and closes it straight after (it used to stay on for the whole Record screen). With the mic open, iOS may play sound quietly, so ▶ playback should now be at normal volume. Still to confirm on the iPad.
+  - GitHub Action `.github/workflows/checks.yml` runs on every pull request: `check-content.mjs`, `update-sw.mjs --check` (the offline file list matches the repo), a check that `CACHE_VERSION` was bumped when game files changed, and `browser-check.mjs` (now also checks the recorder turns the mic off, using Chromium's fake microphone).
 - Repo: https://github.com/jgaffney923/reading-lab (public, same noreply commit email as chemistry-app). GitHub Pages: https://jgaffney923.github.io/reading-lab/
 
 ## Tested

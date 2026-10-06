@@ -43,7 +43,11 @@ const server = createServer(async (req, res) => {
 await new Promise((resolve) => server.listen(0, 'localhost', resolve));
 const base = `http://localhost:${server.address().port}/`;
 
-const browser = await chromium.launch(process.env.PW_CHANNEL ? { channel: process.env.PW_CHANNEL } : {});
+const browser = await chromium.launch({
+  ...(process.env.PW_CHANNEL ? { channel: process.env.PW_CHANNEL } : {}),
+  // A pretend microphone (a steady tone) for the recorder check.
+  args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'],
+});
 const results = [];
 
 async function check(name, fn) {
@@ -128,6 +132,36 @@ async function leaveSoundLabDuring(page, pickRight) {
 
 await check('leaving Sound Lab after picking another letter stays quiet', (page) => leaveSoundLabDuring(page, false));
 await check('leaving Sound Lab after picking the right letter stays quiet', (page) => leaveSoundLabDuring(page, true));
+
+await check('the recorder saves a sound and turns the microphone off after each recording', async (page) => {
+  await page.addInitScript(() => {
+    window.__tracks = [];
+    const get = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+    navigator.mediaDevices.getUserMedia = async (c) => {
+      const stream = await get(c);
+      window.__tracks.push(...stream.getTracks());
+      return stream;
+    };
+  });
+  await openGame(page);
+  await page.evaluate(() => window.__game.sound.context.resume());
+  await startScene(page, 'Recorder');
+  const micOn = () => page.evaluate(() => window.__tracks.filter((t) => t.readyState === 'live').length);
+  for (let round = 0; round < 2; round++) {
+    await page.evaluate(async () => {
+      const rec = window.__game.scene.getScene('Recorder');
+      rec.open(0);
+      rec.recUi.rec.emit('pointerup');
+    });
+    await page.waitForFunction(() => window.__game.scene.getScene('Recorder').recording);
+    if ((await micOn()) !== 1) throw new Error('microphone not on while recording');
+    await pause(1200);
+    await page.evaluate(() => window.__game.scene.getScene('Recorder').recUi.rec.emit('pointerup'));
+    await page.waitForFunction(() => !window.__game.scene.getScene('Recorder').recording);
+    if ((await micOn()) !== 0) throw new Error(`microphone still on after recording ${round + 1}`);
+  }
+  await page.waitForFunction(() => window.__game.cache.audio.exists('narr:snd.s'), null, { timeout: 5000 });
+});
 
 await check('the service worker caches every file and the game reloads offline', async (page, context) => {
   await openGame(page, `${base}?sw=1`);

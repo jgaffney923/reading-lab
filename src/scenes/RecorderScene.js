@@ -20,10 +20,11 @@ export default class RecorderScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(COLORS.bg);
     this.lines = this.cache.json.get('narration');
     this.mic = null;
+    this.opening = false;
     this.recording = false;
     this.events.once('shutdown', () => {
       stopNarration();
-      this.mic?.close();
+      this.closeMic();
     });
     addHomeButton(this);
     this.grid = this.add.container(0, 0);
@@ -145,17 +146,24 @@ export default class RecorderScene extends Phaser.Scene {
     m.add([rec, play, next, remove, done]);
   }
 
+  // The microphone is opened for each recording and closed straight after:
+  // while it's open, iOS can play sound quietly, which would make ▶ hard to hear.
   async startRecording(item, setStatus) {
+    if (this.opening) return; // a second tap while the mic is still opening
     stopNarration();
-    if (!this.mic) {
-      try {
-        this.mic = await openMic(this.sound.context);
-      } catch {
-        setStatus('The microphone is blocked. On the iPad: Settings → Apps → Safari → Microphone → Allow, then come back.');
-        return;
-      }
+    this.opening = true;
+    try {
+      this.mic = await openMic(this.sound.context);
+    } catch {
+      setStatus('The microphone is blocked. On the iPad: Settings → Apps → Safari → Microphone → Allow, then come back.');
+      return;
+    } finally {
+      this.opening = false;
     }
-    if (!this.sys.isActive() || !this.modal) return;
+    if (!this.sys.isActive() || !this.modal) {
+      this.closeMic();
+      return;
+    }
     this.recording = true;
     this.mic.start(() => this.stopRecording(item, setStatus));
     const { dot, square, rec } = this.recUi;
@@ -168,6 +176,7 @@ export default class RecorderScene extends Phaser.Scene {
   async stopRecording(item, setStatus) {
     if (!this.recording) return;
     const clip = this.mic.stop();
+    this.closeMic();
     this.resetRecordButton();
     if (!clip) {
       setStatus("I didn't hear anything. Hold the iPad a little closer and record again.");
@@ -186,7 +195,13 @@ export default class RecorderScene extends Phaser.Scene {
   cancelRecording() {
     if (!this.recording) return;
     this.mic.stop();
+    this.closeMic();
     this.resetRecordButton();
+  }
+
+  closeMic() {
+    this.mic?.close();
+    this.mic = null;
   }
 
   resetRecordButton() {
