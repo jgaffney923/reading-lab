@@ -1,5 +1,6 @@
 // Rewrites the offline file list in sw.js and bumps CACHE_VERSION.
 // Run before every deploy: node tools/update-sw.mjs
+// With --check it changes nothing and fails if the list is out of date (used by CI).
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -27,6 +28,15 @@ sw = sw.replace(
   /\/\/ PRECACHE-START[\s\S]*\/\/ PRECACHE-END/,
   `// PRECACHE-START\nconst PRECACHE = [\n${list}\n];\n// PRECACHE-END`
 );
+
+if (process.argv.includes('--check')) {
+  if (sw === readFileSync(swPath, 'utf8')) {
+    console.log(`sw.js file list is up to date (${files.length + 1} files).`);
+    process.exit(0);
+  }
+  console.error('sw.js file list is out of date. Run: node tools/update-sw.mjs');
+  process.exit(1);
+}
 
 let version;
 sw = sw.replace(/const CACHE_VERSION = (\d+);/, (_, n) => {

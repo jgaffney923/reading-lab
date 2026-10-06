@@ -1,0 +1,42 @@
+# Runs on every pull request (and on main) so a broken or stale build can't
+# reach the iPad unnoticed. Tools only; nothing here is part of the app.
+name: Checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Phonics content rules
+        run: node tools/check-content.mjs
+
+      - name: Offline file list in sw.js
+        run: node tools/update-sw.mjs --check
+
+      - name: Cache version bumped when game files change
+        if: github.event_name == 'pull_request'
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          changed=$(git diff --name-only "$base" HEAD -- index.html manifest.webmanifest vendor src assets)
+          if [ -n "$changed" ] && ! git diff "$base" HEAD -- sw.js | grep -q '^+const CACHE_VERSION'; then
+            echo "Game files changed but CACHE_VERSION wasn't bumped, so iPads would keep the old files."
+            echo "Run: node tools/update-sw.mjs"
+            echo "$changed"
+            exit 1
+          fi
+
+      - name: Browser checks
+        run: |
+          npm install -g playwright@1.56.1
+          playwright install --with-deps chromium
+          node tools/browser-check.mjs

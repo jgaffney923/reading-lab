@@ -2,7 +2,7 @@
 // Run `node tools/update-sw.mjs` before each deploy: it rewrites the file list
 // below and bumps CACHE_VERSION so iPads pick up the new files.
 
-const CACHE_VERSION = 5;
+const CACHE_VERSION = 6;
 const CACHE_NAME = `reading-lab-v${CACHE_VERSION}`;
 
 // PRECACHE-START
