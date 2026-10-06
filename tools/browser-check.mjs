@@ -1,7 +1,8 @@
 // Automated checks in a real browser, for bugs that only show up while the game runs.
 // Needs Playwright on this computer (it's not part of the app):
 //   npm install -g playwright      then      node tools/browser-check.mjs
-// Uses Playwright's Chromium; set PW_CHANNEL=msedge to drive Edge instead.
+// Uses Playwright's Chromium; set PW_CHANNEL=msedge to drive Edge instead, or
+// PW_BROWSER=webkit for Safari's engine (after: playwright install webkit).
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
@@ -19,7 +20,8 @@ function loadPlaywright() {
     return require(join(globalRoot, 'playwright'));
   }
 }
-const { chromium } = loadPlaywright();
+const engine = process.env.PW_BROWSER || 'chromium';
+const browserType = loadPlaywright()[engine];
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const TYPES = {
@@ -43,11 +45,11 @@ const server = createServer(async (req, res) => {
 await new Promise((resolve) => server.listen(0, 'localhost', resolve));
 const base = `http://localhost:${server.address().port}/`;
 
-const browser = await chromium.launch({
+const browser = await browserType.launch(engine === 'chromium' ? {
   ...(process.env.PW_CHANNEL ? { channel: process.env.PW_CHANNEL } : {}),
   // A pretend microphone (a steady tone) for the recorder check.
   args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'],
-});
+} : {});
 const results = [];
 
 async function check(name, fn) {
@@ -67,17 +69,21 @@ async function check(name, fn) {
 
 // Opens the game with the walkthroughs already seen, logging every line the
 // device voice is asked to say along with which scenes were running.
-async function openGame(page, url = base) {
-  await page.addInitScript(() => {
-    localStorage.setItem('reading-lab-save-v1', JSON.stringify({ tips: ['mixer', 'soundlab'] }));
+async function openGame(page, url = base, save = {}) {
+  await page.addInitScript((extra) => {
+    if (!sessionStorage.getItem('saved')) {
+      localStorage.setItem('reading-lab-save-v1', JSON.stringify({ tips: ['mixer', 'soundlab'], ...extra }));
+      sessionStorage.setItem('saved', '1');
+    }
     window.__said = [];
+    if (!('speechSynthesis' in window)) return;
     const speak = speechSynthesis.speak.bind(speechSynthesis);
     speechSynthesis.speak = (u) => {
       const scenes = window.__game?.scene.getScenes(true).map((s) => s.sys.settings.key) ?? [];
       if (u.text.trim()) window.__said.push({ text: u.text, scenes });
       speak(u);
     };
-  });
+  }, save);
   await page.goto(url);
   await page.waitForFunction(() => window.__game?.scene.isActive('Boot'));
 }
@@ -107,13 +113,13 @@ await check('quick taps leave a letter tile where it started', async (page) => {
 });
 
 // The walkthrough is marked as seen, so this is like every visit after the first.
-await check('Sound Lab shows letters on a later visit', async (page) => {
+await check('Cluck Sounds shows letters on a later visit', async (page) => {
   await openGame(page);
   await startScene(page, 'SoundLab');
   await page.waitForFunction(() => window.__game.scene.getScene('SoundLab').tiles.length === 3, null, { timeout: 5000 });
 });
 
-// Leaving Sound Lab part way through a turn must not carry its lines onto the home screen.
+// Leaving Cluck Sounds part way through a turn must not carry its lines onto the home screen.
 async function leaveSoundLabDuring(page, pickRight) {
   await openGame(page);
   await startScene(page, 'SoundLab');
@@ -123,17 +129,94 @@ async function leaveSoundLabDuring(page, pickRight) {
     lab.firstTry = false; // so success always says an effort line
     const tile = lab.tiles.find((t) => (t.letter === lab.target) === right);
     lab.onTap(tile);
-    lab.scene.start('Home'); // what the 🏠 button does: stops Sound Lab too
+    lab.scene.start('Home'); // what the 🏠 button does: stops Cluck Sounds too
   }, pickRight);
   await pause(4000);
   const leaked = await page.evaluate(() => window.__said.filter((s) => s.scenes.includes('Home')));
   if (leaked.length) throw new Error(`said on the home screen: ${leaked.map((s) => `"${s.text}"`).join(', ')}`);
 }
 
-await check('leaving Sound Lab after picking another letter stays quiet', (page) => leaveSoundLabDuring(page, false));
-await check('leaving Sound Lab after picking the right letter stays quiet', (page) => leaveSoundLabDuring(page, true));
+await check('leaving Cluck Sounds after picking another letter stays quiet', (page) => leaveSoundLabDuring(page, false));
+await check('leaving Cluck Sounds after picking the right letter stays quiet', (page) => leaveSoundLabDuring(page, true));
 
-await check('the recorder saves a sound and turns the microphone off after each recording', async (page) => {
+// Headless frames are slow and Phaser caps each frame's time step, so game time
+// runs several times slower than real time here. Speeds a scene back up.
+async function speedUp(page, key, times = 8) {
+  await page.evaluate(([k, t]) => {
+    const scene = window.__game.scene.getScene(k);
+    scene.time.timeScale = t;
+    scene.tweens.timeScale = t;
+  }, [key, times]);
+}
+
+await check('the yard shows the hens unlocked so far and a chick per egg hatched', async (page) => {
+  await openGame(page, base, { set: 2, rewards: { hatch: 3, dance: 1 } });
+  await startScene(page, 'Home');
+  const yard = await page.evaluate(() => {
+    const home = window.__game.scene.getScene('Home');
+    const hens = home.yard.list.filter((o) => o.id).map((o) => o.id);
+    const chicks = home.yard.list.filter((o) => o.text === '🐥').length;
+    const textures = hens.every((id) => window.__game.textures.exists(`hen:${id}`));
+    return { hens, chicks, textures };
+  });
+  if (yard.hens.join() !== 'gertrude,oreo,rhoda,bella') throw new Error(`hens: ${yard.hens.join()}`);
+  if (yard.chicks !== 3) throw new Error(`${yard.chicks} chicks, expected 3`);
+  if (!yard.textures) throw new Error('a hen drawing did not load');
+});
+
+await check('new letters bring a new hen to the coop', async (page) => {
+  await openGame(page, base, { set: 3, levelUp: 3 });
+  await startScene(page, 'Home');
+  await speedUp(page, 'Home');
+  // The letters' sounds are said first, then Marsala pops in.
+  await page.waitForFunction(() => {
+    const home = window.__game.scene.getScene('Home');
+    return home.children.list.some((o) => o.depth === 4000 && o.list?.some((c) => c.id === 'marsala' && c.visible && c.scale > 0.9));
+  }, null, { timeout: 40000 });
+});
+
+await check('a full Egg Words round ends at the reward', async (page) => {
+  await openGame(page);
+  await startScene(page, 'Mixer');
+  await speedUp(page, 'Mixer');
+  for (let word = 0; word < 5; word++) {
+    await page.waitForFunction((n) => {
+      const m = window.__game.scene.getScene('Mixer');
+      return m.index === n && m.state === 'listen' && !m.cards.length;
+    }, word, { timeout: 60000 });
+    // Hear every sound (the slide nudge is skipped), then pick the right picture.
+    await page.evaluate(() => {
+      const m = window.__game.scene.getScene('Mixer');
+      m.slideNudged = true;
+      m.letters.forEach((_, i) => m.tapLetter(i));
+    });
+    await page.waitForFunction(() => window.__game.scene.getScene('Mixer').state === 'choose', null, { timeout: 60000 });
+    await page.evaluate(() => {
+      const m = window.__game.scene.getScene('Mixer');
+      m.tapCard(m.cards.find((c) => c.word === m.word));
+    });
+  }
+  await page.waitForFunction(() => window.__game.scene.isActive('Reward'), null, { timeout: 60000 });
+});
+
+for (const type of ['hatch', 'dance', 'feathers']) {
+  await check(`the ${type} reward plays to the end and is counted`, async (page) => {
+    await openGame(page);
+    await startScene(page, 'Reward');
+    await speedUp(page, 'Reward');
+    await page.evaluate((t) => {
+      const reward = window.__game.scene.getScene('Reward');
+      reward.reward = { type: t, line: `reward.${t}` };
+      reward.children.list.find((o) => o.input?.enabled).emit('pointerup'); // the big egg button
+    }, type);
+    await page.waitForFunction(() => window.__game.scene.getScene('Reward').done, null, { timeout: 40000 });
+    const count = await page.evaluate((t) => JSON.parse(localStorage.getItem('reading-lab-save-v1')).rewards[t], type);
+    if (count !== 1) throw new Error(`saved count is ${count}`);
+  });
+}
+
+// Only Chromium has a pretend microphone.
+if (engine === 'chromium') await check('the recorder saves a sound and turns the microphone off after each recording', async (page) => {
   await page.addInitScript(() => {
     window.__tracks = [];
     const get = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
@@ -183,5 +266,6 @@ await check('the service worker caches every file and the game reloads offline',
 await browser.close();
 server.close();
 
+console.log(`Browser: ${engine}`);
 for (const [name, problem] of results) console.log(`${problem ? 'FAIL' : 'ok  '} ${name}${problem ? `\n     ${problem}` : ''}`);
 process.exit(results.some(([, problem]) => problem) ? 1 : 0);

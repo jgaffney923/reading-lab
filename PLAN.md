@@ -1,4 +1,6 @@
-# Reading Lab Jr. (PWA) — Build Plan
+# Reading Coop (PWA) — Build Plan
+
+(The repo is still called reading-lab; the app was "Reading Lab Jr." until the farm theme, section 15.)
 
 ## 1. Goal
 A touch-first reading game for one 5-year-old kindergartener who knows most letters and many letter sounds but can't yet blend sounds into words. It runs as a Progressive Web App on an iPad (Safari, "Add to Home Screen"), works fully offline, and is tested at home with him after every milestone.
@@ -9,13 +11,13 @@ The aim is not testing or grading. The aim is:
 - reading simple words, then short sentences,
 - confidence: reading feels like play.
 
-**Design principle:** reading is the tool, experiments are the reward. He reads words to power machines in a Junior Scientist lab; every finished round fills the Lab Energy flask and he launches an experiment (rocket, volcano, color potion).
+**Design principle:** reading is the tool, the farm is the reward. The family's real hens guide the games; every word or sound he gets lays an egg in the nest, and a full nest starts a show (a chick hatches, the hens dance, a feather party). Each letter set he reaches brings another hen to the coop.
 
 Sister project: `chemistry app` (Chemistry Play). This app reuses its shell (boot/audio unlock, narration pipeline, save, parent corner, service worker, tools) but is a separate app with its own home screen, tuned for a 5-year-old.
 
 ## 2. Who it's for
 - Age 5, kindergarten. Recognizes most letters, knows many sounds, struggles to blend, few sight words.
-- Loves science, chemistry, robots, experiments, colorful effects.
+- Loves science, chemistry, robots, experiments, colorful effects, and the family's 8 hens.
 - Attention span 5 to 10 minutes. A round is about 2 minutes; a session is two to four rounds.
 - **Cannot read instructions.** Every instruction is spoken; the only text he is asked to read is the reading practice itself.
 
@@ -55,7 +57,7 @@ The child should never feel wrong. But in phonics, if a wrong tap moves forward 
 - **When he picks something else:** the game tells him what he picked ("That one is pan"), says "Let's listen to the sounds together," replays the sounds and the word, and the right answer glows. He taps it and gets the success animation.
 - **Every attempt ends with him hearing and doing it right**, then the reward. Rewards are for finishing, never for accuracy.
 - Accuracy is recorded quietly (first try or not) only to choose what to practice and when to move on (section 5.6).
-- Effort phrases: "Great effort!", "Nice experimenting!", "Let's listen to the sounds." Success phrases: "You got it!", "Great reading!", "Awesome, scientist!"
+- Effort phrases: "Great effort!", "Nice listening!", "Let's listen to the sounds." Success phrases: "You got it!", "Great reading!", "Egg-cellent reading!"
 
 ### 5.4 Sounds
 - **Pure sounds.** "mmm", not "muh"; "sss", not "suh"; stops (b, c/k, d, g, p, t) said short and crisp, with as little "uh" as possible.
@@ -82,7 +84,7 @@ Words are added in this order within each set: vowel-first words (ant), then wor
 
 ### 5.6 Review, mastery and moving on
 - Each round mixes current-set words (most) with one or two review words from earlier sets. Words missed recently come back sooner.
-- **Moving on:** the next set opens when 8 of his last 10 Word Mixer words from the current set were right on the first try, and he has seen at least 6 different words from the set. The home screen celebrates: "You unlocked new letters!" and plays each new sound.
+- **Moving on:** the next set opens when 8 of his last 10 Egg Words words from the current set were right on the first try, and he has seen at least 6 different words from the set. The home screen celebrates: "You unlocked new letters!" and plays each new sound.
 - The parent corner shows which sounds and words need practice, and can move him up or down a set by hand.
 - Nothing about mastery is ever shown to the child as a score.
 
@@ -126,13 +128,13 @@ Extra for this app: the game waits for the Andika font to load before drawing an
 
 ## 8. Games ("machines" in the lab)
 
-### 8.1 Sound Lab (letter sounds) — M1
+### 8.1 Cluck Sounds (letter sounds) — M1 (was Sound Lab; guide: Oreo)
 - The game says "Find the letter that says… mmm." Three letter flasks; he taps one.
 - His pick always says its own sound. If it's a different letter: "Let's listen again… mmm," and the right flask glows.
 - A 🔊 button replays the sound. Any flask can be tapped just to hear it.
 - 6 sounds per round, weighted toward current-set letters and letters he's missed.
 
-### 8.2 Word Mixer (blending, reading) — M1, the core game
+### 8.2 Egg Words (blending, reading) — M1, the core game (was Word Mixer; guide: Rhoda)
 - One word at a time as letter tiles with sound dots and a blending arrow (section 5.1).
 - Pictures appear only after he has heard every sound (by tapping or sliding).
 - Three pictures: the word plus two look-alikes (sharing the most letters in the same places).
@@ -151,10 +153,10 @@ Extra for this app: the game waits for the Andika font to load before drawing an
 ### 8.5 Heart Word Lab — M5
 - Heart words with the tricky part marked with a heart. Matching and finding them in robot sentences.
 
-### 8.6 Experiments (the reward) — M1
-- Each round fills a row of energy flasks (one per word or sound). Full energy opens the experiment screen: one big button, he launches it.
-- M1 experiments: rocket launch, volcano, color potion fireworks, rotating so each feels new. Each launch adds to the collection shown on the home screen.
-- Later: unlockable experiments (robot dance, slime, rainbow, crystal) tied to new sets.
+### 8.6 Farm shows (the reward) — M1.7 (replaced the M1 experiments)
+- Each word or sound he gets lays an egg in the nest at the top. A full nest opens the reward screen: one big egg button, he presses it.
+- Three shows take turns so each feels new: an egg hatches a chick, every hen in the coop dances, Gertrude flaps and feathers rain down. Every hatched chick joins the yard on the home screen.
+- Later ideas: shows unlocked with new sets (a hen parade, a rainbow egg, collecting eggs in a basket).
 
 ### 8.7 Parent corner — M1
 - Hold the gear for 3 seconds. Sound on/off, current letter set with easier/harder buttons, "needs practice" list (sounds and words with low recent first-try rates), reset progress.
@@ -165,12 +167,12 @@ Extra for this app: the game waits for the Andika font to load before drawing an
 | M0 | Shell | Tap to start, home screen, installable, offline, Andika font, deployed to GitHub Pages |
 | M1 | Sound Lab + Word Mixer + experiments | Both games playable end to end for sets 1–4; feedback follows 5.3; set progression and parent corner work; first-visit walkthrough; stand-in voice for instructions and words |
 | M1.5 | **Record the sounds** | In-app recorder (⚙️ → Record sounds) built. Parent records all 26 letter sounds on the iPad before the first kid test. Without them the stand-in voice mispronounces sounds. |
-| M1.7 | **Farm theme** | Science lab replaced by the family's hens (section 15): hen guide, eggs instead of Lab Energy, coop on the home screen that unlocks a hen per letter set |
+| M1.7 | **Farm theme** (built 2026-10-06) | Science lab replaced by the family's hens (section 15): hen guide, eggs instead of Lab Energy, coop on the home screen that unlocks a hen per letter set |
 | M2 | Word Builder | Drag-to-spell for sets 1–4, gentle float-back, blend on completion, stickers |
 | M3 | Kid-test pass | Play with him for a week, log issues, fix the top 5, tune round lengths and the move-on rule |
 | M4 | Robot Reader | Phrases and 3–6 word sentences with robot actions; heart words a, the, is |
 | M5 | Digraphs, blends, heart words | Sets 5–7 added to data, sound recordings, Heart Word Lab |
-| M6+ | Chosen after testing | Ideas: decodable mini-stories, "read to a grown-up" mode, sticker book of experiments, two-player sibling mode |
+| M6+ | Chosen after testing | Ideas: decodable mini-stories, "read to a grown-up" mode, sticker book of the farm, two-player sibling mode |
 
 Every milestone ends with a short test with him before the next starts. Each milestone that adds narration updates `narration-script.md`.
 
@@ -194,9 +196,9 @@ Every milestone ends with a short test with him before the next starts. Each mil
 - Never stretch a stop sound ("t-t-t"); blend into it.
 
 ## 12. Language and tone
-- The child is a Junior Scientist. Lines are short, warm and slow.
+- The hens are his friends on the farm. Lines are short, warm and slow.
 - Banned words and effects: wrong, incorrect, failed, oops, no, try again (as a verdict), red X, buzzer, sad faces, losing points or energy.
-- Said instead: "Let's listen to the sounds." "Let's mix that together!" "Great effort!" "Nice experimenting!"
+- Said instead: "Let's listen to the sounds." "Let's mix that together!" "Great effort!" "Nice listening!"
 
 ## 13. Narration and recording
 - Every spoken line has an ID in `src/data/narration.json`; `narration-script.md` lists them with how to say them.
@@ -212,7 +214,7 @@ Every milestone ends with a short test with him before the next starts. Each mil
 - Handwriting.
 
 ## 15. Farm theme: our hens (decided 2026-10-04)
-The owner chose to **replace the science-lab theme** with the family's 8 real hens. (Peppa Pig was considered and ruled out: it's licensed and the site is public.) Sections 1, 8.6 and 12 still describe the lab; update them when this is built.
+The owner chose to **replace the science-lab theme** with the family's 8 real hens. (Peppa Pig was considered and ruled out: it's licensed and the site is public.) Built 2026-10-06 (M1.7); sections 1, 8.6 and 12 now describe the farm.
 
 **The hens** are already drawn, as code-generated SVG in `src/art/chickens.js`; the owner approved the looks. Preview: `node tools/make-chicken-preview.mjs`, then open `chicken-preview.html` (git-ignored). Load into Phaser with `this.load.svg(key, chickenDataURI(id), { width, height })`.
 
@@ -234,4 +236,6 @@ The owner chose to **replace the science-lab theme** with the family's 8 real he
 - **Words:** hen, egg, peck, nest and similar are good picture words, but only add them when the letters he has can spell them (sections 5.5 and 11; run `tools/check-content.mjs`).
 - **Language:** replace the lab phrases ("Nice experimenting!", "Awesome, scientist!") with farm ones in `narration.json`, and update `narration-script.md` so the owner can record them.
 
-**Still to decide when building:** new names for Sound Lab and Word Mixer, the app name and icon (a hen instead of a flask), and which hen guides which game.
+**Decided when building (2026-10-06, by the owner):** Sound Lab is now **Cluck Sounds**, guided by **Oreo**; Word Mixer is now **Egg Words**, guided by **Rhoda**. The app is called **Reading Coop**, with Gertrude's head as the icon (`node tools/make-icons.mjs`).
+
+**How it's built:** hen order and guides live in `src/data/farm.json`. Gertrude, Oreo and Rhoda are in the coop from the start (the two guides appear in the games straight away); Bella joins at set 2, Marsala at set 3, Tina at set 4; Luna and Harriet are kept for sets 5+. Hens are drawn from `src/art/chickens.js` into textures at start-up (`src/ui/hen.js`). The egg nest is `src/ui/nest.js`; the shows are in `src/scenes/RewardScene.js`. Code names stay `SoundLab` and `Mixer` (scene keys, narration ids `soundlab.*`, `mixer.*`) so saved progress and recordings keep working.

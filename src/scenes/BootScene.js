@@ -2,6 +2,7 @@ import { W, H, COLORS, MIN_TOUCH } from '../layout.js';
 import { preloadNarration, unlockAudio, sayAll } from '../systems/audio.js';
 import { initPhonics } from '../systems/phonics.js';
 import { loadRecordings } from '../systems/recordings.js';
+import { initFarm, loadHenTextures, makeHen } from '../ui/hen.js';
 
 // "Tap to start": iOS only allows sound after a tap, so every session begins here.
 export default class BootScene extends Phaser.Scene {
@@ -12,17 +13,20 @@ export default class BootScene extends Phaser.Scene {
   preload() {
     this.load.json('narration', 'src/data/narration.json');
     this.load.json('phonics', 'src/data/phonics.json');
+    this.load.json('farm', 'src/data/farm.json');
     this.load.once('filecomplete-json-narration', () => preloadNarration(this));
   }
 
   create() {
     initPhonics(this.cache.json.get('phonics'));
+    initFarm(this.cache.json.get('farm'));
     // Phaser draws text once, so letters must wait for the reading font.
     const fontReady = document.fonts
       ? document.fonts.load('700 100px Andika').catch(() => {})
       : Promise.resolve();
     // Sounds a grown-up recorded on this iPad (Record sounds, in the ⚙️ panel).
-    const ready = Promise.all([fontReady, loadRecordings(this.game)]);
+    const hens = loadHenTextures(this.game);
+    const ready = Promise.all([fontReady, loadRecordings(this.game), hens]);
 
     const radius = Math.max(MIN_TOUCH, 260);
     const button = this.add.container(W / 2, H / 2);
@@ -42,6 +46,13 @@ export default class BootScene extends Phaser.Scene {
       yoyo: true,
       repeat: -1,
       ease: 'Sine.easeInOut',
+    });
+
+    // Gertrude, the head hen, waits beside the button.
+    hens.then(() => {
+      if (!this.sys.isActive() || !button.active) return;
+      const gertrude = makeHen(this, 'gertrude', W / 2 - radius - 260, H / 2 + radius, 440);
+      this.time.addEvent({ delay: 1800, loop: true, callback: () => gertrude.peck() });
     });
 
     button.setInteractive(new Phaser.Geom.Circle(0, 0, radius), Phaser.Geom.Circle.Contains);

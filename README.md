@@ -1,10 +1,11 @@
-# Reading Lab Jr.
+# Reading Coop
 
-A touch-first reading game for a 5-year-old: he sounds out words to power science experiments. It runs offline on an iPad as a home-screen web app. See [PLAN.md](PLAN.md) for the design (section 5 is how reading is taught), [STATUS.md](STATUS.md) for where things stand.
+A touch-first reading game for a 5-year-old: he sounds out words with the family's hens, and every word lays an egg. (It was "Reading Lab Jr." until the farm theme; the repo keeps the old name.) It runs offline on an iPad as a home-screen web app. See [PLAN.md](PLAN.md) for the design (section 5 is how reading is taught), [STATUS.md](STATUS.md) for where things stand.
 
 - Engine: Phaser **3.90.0**, vendored at `vendor/phaser.min.js` (no CDN, no build step). Shell shared with `../chemistry app`.
 - Font: Andika Bold (SIL Open Font License, `assets/fonts/OFL.txt`).
-- Games: **Sound Lab** (find the letter for a sound) and **Word Mixer** (sound out a word, pick its picture). Each round ends with an experiment.
+- Games: **Cluck Sounds** with Oreo (find the letter for a sound) and **Egg Words** with Rhoda (sound out a word, pick its picture). Each right answer lays an egg; a full nest starts a farm show.
+- Hens: drawn in code in `src/art/chickens.js`; which hens live in the coop at each letter set is in `src/data/farm.json`. App icon: `node tools/make-icons.mjs` (needs Playwright, like the browser checks).
 - Words, letters and pictures: `src/data/phonics.json`. Spoken lines: `src/data/narration.json`. After editing either, run `node tools/check-content.mjs` (add `--fix` to create lines for new sounds and words).
 
 ## Run it on the PC
@@ -13,6 +14,8 @@ Edge/Chrome devtools → device toolbar → iPad, landscape.
 
 On `localhost` the offline service worker is switched off, so edits show up on reload.
 To test offline mode locally, add `?sw=1` to the URL.
+
+Automated checks: `node tools/browser-check.mjs` plays the games in a real browser (needs Playwright: `npm install -g playwright`). GitHub runs them, in Chromium and WebKit, on every pull request.
 
 ## Deploy (GitHub Pages)
 1. `node tools/update-sw.mjs` (refreshes the offline file list and bumps `CACHE_VERSION`).
@@ -26,9 +29,9 @@ Service workers only run over HTTPS, so test on the iPad from the GitHub Pages U
 2. Launch it from the home screen, tap the green button, check you hear the voice.
 3. **Offline:** Airplane Mode on, close the app fully, reopen. It should still work.
 4. **Update:** after a deploy, open once with Wi-Fi on, close fully, reopen. The corner version number should change.
-5. **Word Mixer:** tap each letter, then slide a finger along the purple arrow (fast and slow). Pictures appear only after every sound has been heard. Pick a different picture once: it should say what you picked, sound the word out, and glow the right one. Nothing should ever sound like "wrong".
-6. **Sound Lab:** pick a different letter once; it says that letter's sound, then the target sound again, and the right letter glows.
-7. **Experiments:** each finished round launches one (rocket, volcano, potion in turn); they show up along the bottom of the home screen.
+5. **Egg Words:** tap each letter, then slide a finger along the purple arrow (fast and slow). Pictures appear only after every sound has been heard. Pick a different picture once: it should say what you picked, sound the word out, and glow the right one. Nothing should ever sound like "wrong".
+6. **Cluck Sounds:** pick a different letter once; it says that letter's sound, then the target sound again, and the right letter glows.
+7. **Farm shows:** each finished round fills the nest; press the big egg for a show (a chick hatches, the hens dance, feathers rain, in turn). Every hatched chick joins the yard on the home screen. Tap a hen to make her cluck.
 8. **Grown-ups panel:** hold the ⚙️ for 3 seconds. Check the letter set, Easier/Harder, and the "needs practice" list.
 
 Notes:

@@ -1,6 +1,6 @@
 # Narration script
 
-**0 of 95 lines recorded** (letter sounds: 0 of 26).
+**0 of 96 lines recorded** (letter sounds: 0 of 26).
 
 How to add a recording (details in README.md):
 1. Record the line (iPhone Voice Memos is fine) and save it into `recordings-raw/`.
@@ -103,28 +103,29 @@ the game blends the sound recordings itself.
 
 | File name (id) | Say this | Status |
 |---|---|---|
-| `boot.welcome` | Hi, scientist! Let's read and do experiments! | TO RECORD |
-| `home.pick` | Pick a machine! | TO RECORD |
+| `boot.welcome` | Hi, friend! Let's read with the hens! | TO RECORD |
+| `home.pick` | Pick a game! | TO RECORD |
 | `home.levelUp` | Wow! You unlocked new letters! Listen. | TO RECORD |
+| `home.newHen` | And look! A new hen came to live in the coop! | TO RECORD |
 | `praise.1` | You got it! | TO RECORD |
 | `praise.2` | Great reading! | TO RECORD |
-| `praise.3` | Awesome, scientist! | TO RECORD |
+| `praise.3` | Egg-cellent reading! | TO RECORD |
 | `praise.4` | Yes! | TO RECORD |
-| `praise.5` | Nice mixing! | TO RECORD |
+| `praise.5` | Cluck, cluck, hooray! | TO RECORD |
 | `effort.1` | Great effort! | TO RECORD |
-| `effort.2` | Nice experimenting! | TO RECORD |
+| `effort.2` | Nice listening! | TO RECORD |
 | `effort.3` | That's it! | TO RECORD |
-| `soundlab.intro` | This is the Sound Lab! I'll say a sound. You tap the letter that makes that sound. | TO RECORD |
+| `soundlab.intro` | This is Cluck Sounds, with Oreo! I'll say a sound. You tap the letter that makes that sound. | TO RECORD |
 | `soundlab.find` | Find the letter that says | TO RECORD |
 | `soundlab.listen` | Let's listen again. | TO RECORD |
-| `mixer.intro` | This is the Word Mixer! Touch each letter to hear its sound. Then slide along the arrow to mix the sounds into a word. | TO RECORD |
+| `mixer.intro` | This is Egg Words, with Rhoda! Touch each letter to hear its sound. Then slide along the arrow to mix the sounds into a word. | TO RECORD |
 | `mixer.touch` | Touch each letter to hear its sound. | TO RECORD |
 | `mixer.slide` | Slide along the arrow to mix the sounds. Faster makes a word! | TO RECORD |
 | `mixer.which` | Which picture is it? | TO RECORD |
 | `mixer.thatOne` | That one is | TO RECORD |
 | `mixer.listen` | Let's listen to the sounds together. | TO RECORD |
-| `reward.full` | The lab energy is full! Tap the big button to start the experiment! | TO RECORD |
-| `reward.rocket` | Three, two, one, blast off! | TO RECORD |
-| `reward.volcano` | Whoa! The volcano is erupting! | TO RECORD |
-| `reward.potion` | Look at all the colors! | TO RECORD |
-| `reward.again` | Great work, scientist! Play again, or go home. | TO RECORD |
+| `reward.full` | The nest is full of eggs! Tap the big egg! | TO RECORD |
+| `reward.hatch` | Crack, crack, crack... a baby chick! | TO RECORD |
+| `reward.dance` | The hens are dancing! | TO RECORD |
+| `reward.feathers` | Feather party! | TO RECORD |
+| `reward.again` | Great reading! Play again, or go home. | TO RECORD |

@@ -1,19 +1,22 @@
 import { W, H, COLORS } from '../layout.js';
 import { say, sfx, stopNarration } from '../systems/audio.js';
-import { addExperiment, experimentTotal } from '../systems/save.js';
+import { addReward, rewardTotal, currentSet } from '../systems/save.js';
 import { makeRoundButton, makeIconButton } from '../ui/button.js';
-import { addEmoji, addLabel } from '../ui/text.js';
-import { burst, bubbles, RAINBOW } from '../ui/effects.js';
+import { addEmoji } from '../ui/text.js';
+import { burst, feathers, RAINBOW } from '../ui/effects.js';
+import { makeHen, hensUpTo } from '../ui/hen.js';
 
-// Experiments take turns, so each one feels new.
-export const EXPERIMENTS = [
-  { type: 'rocket', emoji: '🚀', line: 'reward.rocket' },
-  { type: 'volcano', emoji: '🌋', line: 'reward.volcano' },
-  { type: 'potion', emoji: '⚗️', line: 'reward.potion' },
+// The shows take turns, so each one feels new. The emoji marks them on the home screen.
+export const REWARDS = [
+  { type: 'hatch', emoji: '🐣', line: 'reward.hatch' },
+  { type: 'dance', emoji: '🎵', line: 'reward.dance' },
+  { type: 'feathers', emoji: '🪶', line: 'reward.feathers' },
 ];
 
-// The end of every round: Lab Energy is full, he presses the big button and
-// an experiment goes off. Then: play again, or go home.
+const SHELL_EDGE = 0xd9c7a3;
+
+// The end of every round: the nest is full, he presses the big egg button and
+// a show starts. Then: play again, or go home.
 export default class RewardScene extends Phaser.Scene {
   constructor() {
     super('Reward');
@@ -23,15 +26,17 @@ export default class RewardScene extends Phaser.Scene {
     this.from = from;
     this.cameras.main.setBackgroundColor(COLORS.bg);
     this.events.once('shutdown', () => stopNarration());
-    this.experiment = EXPERIMENTS[experimentTotal() % EXPERIMENTS.length];
+    this.reward = REWARDS[rewardTotal() % REWARDS.length];
     this.layer = this.add.container(0, 0);
+    this.done = false;
 
-    const go = makeRoundButton(this, W / 2, H / 2, 260, COLORS.go,
-      addEmoji(this, 0, 0, this.experiment.emoji, 260), () => {
-        go.disableInteractive();
-        this.tweens.add({ targets: go, scale: 0, duration: 250, ease: 'Back.easeIn', onComplete: () => go.destroy() });
-        this.launch();
-      });
+    const egg = this.add.graphics();
+    drawEgg(egg, 0, 0, 120, 155);
+    const go = makeRoundButton(this, W / 2, H / 2, 260, COLORS.go, egg, () => {
+      go.disableInteractive();
+      this.tweens.add({ targets: go, scale: 0, duration: 250, ease: 'Back.easeIn', onComplete: () => go.destroy() });
+      this.play();
+    });
     go.setScale(0);
     this.tweens.add({ targets: go, scale: 1, duration: 500, ease: 'Back.easeOut' });
     this.tweens.add({ targets: go, angle: { from: -4, to: 4 }, duration: 300, yoyo: true, repeat: -1, delay: 500 });
@@ -39,11 +44,11 @@ export default class RewardScene extends Phaser.Scene {
     say(this, 'reward.full');
   }
 
-  async launch() {
+  async play() {
     stopNarration();
-    addExperiment(this.experiment.type);
-    say(this, this.experiment.line);
-    await this[this.experiment.type]();
+    addReward(this.reward.type);
+    say(this, this.reward.line);
+    await this[this.reward.type]();
     if (!this.sys.isActive()) return;
     this.tweens.add({ targets: this.layer, alpha: 0, duration: 500 });
     this.finish();
@@ -60,6 +65,7 @@ export default class RewardScene extends Phaser.Scene {
       b.setScale(0);
       this.tweens.add({ targets: b, scale: 1, duration: 350, delay: i * 120, ease: 'Back.easeOut' });
     });
+    this.done = true;
     say(this, 'reward.again');
   }
 
@@ -67,94 +73,136 @@ export default class RewardScene extends Phaser.Scene {
     return new Promise((resolve) => this.time.delayedCall(ms, resolve));
   }
 
-  fireworks(times) {
-    for (let i = 0; i < times; i++) {
-      this.time.delayedCall(i * 350, () => {
-        sfx(this, 'pop');
-        burst(this, Phaser.Math.Between(300, W - 300), Phaser.Math.Between(200, 700), RAINBOW, { reach: 220, count: 16 });
-      });
-    }
+  tween(config) {
+    return new Promise((resolve) => this.tweens.add({ ...config, onComplete: resolve }));
   }
 
-  // 3, 2, 1, and up it goes in a trail of smoke.
-  async rocket() {
-    const rocket = addEmoji(this, W / 2, H - 330, '🚀', 300).setAngle(-45);
-    this.layer.add(rocket);
-    for (const n of ['3', '2', '1']) {
-      const num = addLabel(this, W / 2, 420, n, 300);
-      this.tweens.add({
-        targets: num, scale: { from: 1.4, to: 0.8 }, alpha: { from: 1, to: 0 }, duration: 650,
-        onComplete: () => num.destroy(),
-      });
-      sfx(this, 'pop');
-      await this.wait(700);
+  // A big egg wobbles, cracks, and a chick pops out.
+  async hatch() {
+    const x = W / 2, y = H / 2 + 120, rx = 230, ry = 300;
+    const egg = this.add.graphics({ x, y });
+    drawEgg(egg, 0, 0, rx, ry);
+    this.layer.add(egg);
+
+    const cracks = this.add.graphics({ x, y });
+    cracks.lineStyle(10, 0x8a6d3b, 1);
+    this.layer.add(cracks);
+    const zigzag = crackLine(rx);
+    for (let n = 1; n <= 3; n++) {
+      sfx(this, 'crack');
+      await this.tween({ targets: [egg, cracks], angle: { from: -8, to: 8 }, duration: 120, yoyo: true, repeat: 1 });
+      // Each wobble draws a bit more of the crack across the middle.
+      const upTo = Math.round((zigzag.length * n) / 3);
+      cracks.clear().lineStyle(10, 0x8a6d3b, 1);
+      cracks.strokePoints(zigzag.slice(0, upTo));
+      await this.wait(350);
+      if (!this.sys.isActive()) return;
     }
-    sfx(this, 'launch');
-    this.cameras.main.shake(500, 0.006);
-    const smoke = this.time.addEvent({
-      delay: 60,
+
+    // Split: the top flies off, the chick pops up out of the bottom.
+    egg.destroy();
+    cracks.destroy();
+    const bottom = this.add.graphics({ x, y });
+    const top = this.add.graphics({ x, y });
+    drawHalf(bottom, rx, ry, zigzag, false);
+    drawHalf(top, rx, ry, zigzag, true);
+    const chick = addEmoji(this, x, y - 40, '🐥', 280).setScale(0);
+    this.layer.add([chick, bottom, top]);
+    sfx(this, 'peep');
+    burst(this, x, y - 100, [0xffd84d, 0xffffff, 0xffb84d], { reach: 420, count: 18 });
+    this.tweens.add({ targets: top, y: y - 520, x: x + 260, angle: 50, duration: 700, ease: 'Quad.easeOut' });
+    this.tweens.add({ targets: top, alpha: 0, delay: 500, duration: 300 });
+    await this.tween({ targets: chick, scale: 1, y: y - 260, duration: 500, ease: 'Back.easeOut' });
+    for (let i = 0; i < 3; i++) {
+      sfx(this, 'peep');
+      await this.tween({ targets: chick, y: y - 330, duration: 180, yoyo: true, ease: 'Quad.easeOut' });
+    }
+    await this.wait(1200);
+  }
+
+  // Every hen in the coop lines up and dances.
+  async dance() {
+    const hens = hensUpTo(currentSet());
+    const step = Math.min(330, (W - 300) / hens.length);
+    const startX = W / 2 - ((hens.length - 1) * step) / 2;
+    const size = Math.min(360, step * 1.15);
+    const dancers = hens.map((id, i) => {
+      const hen = makeHen(this, id, startX + i * step, H / 2 + 330, size, { facing: i % 2 ? 'left' : 'right' });
+      this.layer.add(hen);
+      return hen;
+    });
+    const notes = this.time.addEvent({
+      delay: 260,
       loop: true,
       callback: () => {
-        const puff = this.add.circle(rocket.x + Phaser.Math.Between(-30, 30), rocket.y + 150, Phaser.Math.Between(30, 60), 0xd8dde8);
-        this.layer.add(puff);
-        this.tweens.add({ targets: puff, scale: 2.2, alpha: 0, duration: 900, onComplete: () => puff.destroy() });
+        const note = addEmoji(this, Phaser.Math.Between(200, W - 200), H / 2 + 100, Phaser.Utils.Array.GetRandom(['🎵', '🎶']), 110);
+        this.layer.add(note);
+        this.tweens.add({ targets: note, y: note.y - 500, alpha: 0, duration: 1500, onComplete: () => note.destroy() });
       },
     });
-    await new Promise((resolve) => this.tweens.add({ targets: rocket, y: -400, duration: 1600, ease: 'Cubic.easeIn', onComplete: resolve }));
-    smoke.remove();
-    this.fireworks(5);
-    await this.wait(2000);
+    for (let round = 0; round < 2; round++) {
+      sfx(this, 'cluck');
+      await Promise.all(dancers.map((hen, i) => this.wait(i * 120).then(() => hen.dance(4))));
+      if (!this.sys.isActive()) return;
+    }
+    notes.remove();
+    sfx(this, 'star');
+    burst(this, W / 2, H / 2 - 200, RAINBOW, { reach: 500, count: 20 });
+    await this.wait(1400);
   }
 
-  // A rumble, then lava flying out of the top.
-  async volcano() {
-    const volcano = addEmoji(this, W / 2, H - 340, '🌋', 440);
-    this.layer.add(volcano);
-    this.cameras.main.shake(900, 0.008);
-    await this.wait(900);
-    sfx(this, 'boom');
-    const top = { x: W / 2, y: H - 560 };
-    const lava = [0xff4d2e, 0xff7a3d, 0xffc53d, 0xff6b5b];
-    for (let i = 0; i < 50; i++) {
-      this.time.delayedCall(i * 40, () => {
-        const blob = this.add.circle(top.x, top.y, Phaser.Math.Between(16, 34), lava[i % lava.length]);
-        this.layer.add(blob);
-        const time = Phaser.Math.Between(900, 1400);
-        this.tweens.add({ targets: blob, x: top.x + Phaser.Math.Between(-700, 700), duration: time });
-        this.tweens.add({
-          targets: blob,
-          y: top.y - Phaser.Math.Between(350, 800),
-          duration: time / 2,
-          ease: 'Quad.easeOut',
-          yoyo: true,
-          onComplete: () => blob.destroy(),
-        });
-      });
+  // Gertrude flaps her wings and feathers rain down.
+  async feathers() {
+    const hen = makeHen(this, 'gertrude', W / 2, H / 2 + 420, 620);
+    this.layer.add(hen);
+    for (let i = 0; i < 3; i++) {
+      sfx(this, 'flap');
+      await hen.dance(2);
+      if (!this.sys.isActive()) return;
     }
+    feathers(this, { count: 50, duration: 3000 });
+    sfx(this, 'star');
     await this.wait(3200);
   }
+}
 
-  // A big flask that bubbles through every color, then fireworks.
-  async potion() {
-    const x = W / 2, y = H / 2 + 120;
-    const flask = this.add.graphics();
-    flask.fillStyle(0xffffff, 1);
-    flask.fillRect(x - 90, y - 520, 180, 300);
-    flask.fillCircle(x, y, 300);
-    flask.lineStyle(14, COLORS.ink, 0.15);
-    flask.strokeCircle(x, y, 300);
-    const liquid = this.add.circle(x, y + 20, 260, RAINBOW[0]);
-    this.layer.add([flask, liquid]);
-
-    for (let i = 1; i <= 12; i++) {
-      this.time.delayedCall(i * 220, () => {
-        liquid.setFillStyle(RAINBOW[i % RAINBOW.length]);
-        sfx(this, 'bubble');
-        bubbles(this, x, y - 100, { count: 6, spread: 160, rise: 500 });
-      });
-    }
-    await this.wait(2800);
-    this.fireworks(6);
-    await this.wait(2200);
+// An egg: an ellipse a little narrower at the top, shell colored.
+function drawEgg(g, x, y, rx, ry) {
+  const points = [];
+  for (let i = 0; i <= 48; i++) {
+    const a = (Math.PI * 2 * i) / 48;
+    const s = Math.sin(a);
+    points.push({ x: x + Math.cos(a) * rx * (s < 0 ? 0.86 + 0.14 * (1 + s) : 1), y: y + s * ry });
   }
+  g.fillStyle(COLORS.shell, 1);
+  g.fillPoints(points, true);
+  g.lineStyle(Math.max(4, rx * 0.04), SHELL_EDGE, 1);
+  g.strokePoints(points, true);
+}
+
+// A zigzag across the middle of the egg, left to right.
+function crackLine(rx) {
+  const points = [];
+  const teeth = 8;
+  for (let i = 0; i <= teeth; i++) {
+    const edge = i === 0 || i === teeth; // meet the shell's outline at the sides
+    points.push({ x: -rx + (2 * rx * i) / teeth, y: edge ? 0 : i % 2 ? -36 : 24 });
+  }
+  return points;
+}
+
+// One half of the cracked egg: the shell outline above or below the zigzag.
+function drawHalf(g, rx, ry, zigzag, upper) {
+  const arc = [];
+  for (let i = 0; i <= 24; i++) {
+    const a = upper ? Math.PI + (Math.PI * i) / 24 : (Math.PI * i) / 24;
+    const s = Math.sin(a);
+    arc.push({ x: Math.cos(a) * rx * (s < 0 ? 0.86 + 0.14 * (1 + s) : 1), y: s * ry });
+  }
+  // Lower arc runs right to left, upper arc left to right; close along the zigzag.
+  const points = upper ? [...arc, ...[...zigzag].reverse()] : [...arc, ...zigzag];
+  g.fillStyle(COLORS.shell, 1);
+  g.fillPoints(points, true);
+  g.lineStyle(9, SHELL_EDGE, 1);
+  g.strokePoints(points, true);
 }

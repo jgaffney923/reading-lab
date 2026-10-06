@@ -1,0 +1,6 @@
+{
+  "guides": { "sounds": "oreo", "words": "rhoda" },
+  "start": ["gertrude", "oreo", "rhoda"],
+  "joinsAtSet": { "2": "bella", "3": "marsala", "4": "tina" },
+  "later": ["luna", "harriet"]
+}

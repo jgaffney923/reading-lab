@@ -30,11 +30,20 @@ Not yet tested on the iPad (including the real microphone and permission prompt)
 1. Install on the iPad from the Pages URL (README), then **record the 26 letter sounds** in the app (⚙️ → Record sounds). Milestone M1.5, before the first test with him.
 2. Check on the iPad: microphone prompt, that playback volume is normal after recording (iOS can route sound quietly while the mic is open), and that sounds blend when sliding fast.
 3. Play with him for a few days. Watch: does he slide the arrow or only tap? Does he say the word out loud before picking a picture? Is 5 words per round the right length? Does he notice the coral vowels?
-4. M1.7 farm theme (PLAN.md section 15). It can be built before or after the first kid test.
+4. ~~M1.7 farm theme~~ built 2026-10-06. Check it on the iPad: the hens' drawings, the nest, the three shows, the new icon (you may need to remove and re-add the home-screen app to see the new icon and name).
 5. Then M2 Word Builder (PLAN.md 8.3).
 
-## Chickens / farm theme (2026-10-04)
-The family's 8 hens are drawn (`src/art/chickens.js`) and approved by the owner. **Decision: replace the science-lab theme with a farm theme** (eggs instead of Lab Energy, a coop that unlocks a hen per letter set, a hen guide). Full plan is in PLAN.md section 15, milestone M1.7. Not built yet.
+## Chickens / farm theme (2026-10-04, built 2026-10-06)
+The family's 8 hens are drawn (`src/art/chickens.js`) and approved by the owner. **Decision: replace the science-lab theme with a farm theme.** Plan: PLAN.md section 15, milestone M1.7.
+
+**M1.7 built (2026-10-06)**, release `0.3.0 (farm)`, cache version 7. The owner chose the names: the app is **Reading Coop** (Gertrude's head is the icon), Sound Lab is **Cluck Sounds** with Oreo, Word Mixer is **Egg Words** with Rhoda.
+- **Home** is a farm: the letters along the top, a card for each game with its hen, and a yard with the red coop, the hens unlocked so far (tap one and she clucks) and a chick for every egg hatched (up to 10). Gertrude, Oreo and Rhoda are there from the start; Bella joins at set 2, Marsala at set 3, Tina at set 4 (`src/data/farm.json`). The new-letters celebration ends with the new hen popping in.
+- **Games:** the energy tubes are now a straw nest; each right answer lays an egg. The guide hen pecks when a sound is asked, tilts her head on the "let's listen together" path and hops on success. Egg Words' sound dots are egg-shaped.
+- **Rewards:** a full nest gives a big egg button and one of three shows in turn: a chick hatches, the hens dance, a feather party. Old experiment counts are left in the save but no longer shown.
+- **Narration:** lab phrases replaced (welcome, "Pick a game!", praise, intros, reward lines); new lines `home.newHen`, `reward.hatch`, `reward.dance`, `reward.feathers`. `narration-script.md` regenerated (96 lines, none recorded yet, so nothing recorded was invalidated). Letter-sound recordings are unaffected.
+- Code names stay `SoundLab` / `Mixer` so saved progress and recordings keep working.
+- **Checked:** `tools/browser-check.mjs` now also covers the yard's hens and chicks, the new hen on level-up, a full Egg Words round to the reward, and all three shows (12 checks, all pass in Chromium). Screenshots of every screen were reviewed. The GitHub Action now runs the checks in WebKit (Safari's engine) too. **Not yet seen on the iPad.**
+- Note for testing in a headless browser: frames are slow and Phaser caps each frame's time step, so game time runs several times slower than real time. The checks speed scenes up with `time.timeScale` / `tweens.timeScale`.
 
 ## Decisions made along the way
 - Emoji pictures as placeholders. They look different on Windows; check them on the iPad, and swap any he names differently (PLAN.md 11).
