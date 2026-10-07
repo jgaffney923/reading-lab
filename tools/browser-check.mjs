@@ -99,16 +99,18 @@ await check('quick taps leave a letter tile where it started', async (page) => {
   await openGame(page);
   await startScene(page, 'Home');
   await pause(500);
-  const { y0, y1 } = await page.evaluate(async () => {
-    const tile = window.__game.scene.getScene('Home').shelf.list[0];
-    const y0 = tile.y;
-    for (let i = 0; i < 4; i++) {
-      tile.hop();
-      await new Promise((r) => setTimeout(r, 70));
-    }
-    await new Promise((r) => setTimeout(r, 800));
-    return { y0, y1: tile.y };
-  });
+  // Tap, wait until the tile is in the air, tap again: the second hop starts
+  // mid-flight, as it does when a child taps quickly. Animations run in slow
+  // motion meanwhile, because headless frames are so slow that a whole hop
+  // would otherwise fit in two frames and the taps would never overlap.
+  const tile = 'window.__game.scene.getScene("Home").shelf.list[0]';
+  const tweens = 'window.__game.scene.getScene("Home").tweens';
+  const y0 = await page.evaluate(`${tile}.y`);
+  await page.evaluate(`${tweens}.timeScale = 0.02; ${tile}.hop()`);
+  await page.waitForFunction(`${tile}.y < ${y0} - 10`, null, { timeout: 20000 });
+  await page.evaluate(`${tile}.hop(); ${tweens}.timeScale = 1`);
+  await page.waitForFunction(`window.__game.scene.getScene("Home").tweens.getTweensOf(${tile}).length === 0`, null, { timeout: 30000 });
+  const y1 = await page.evaluate(() => window.__game.scene.getScene('Home').shelf.list[0].y);
   if (y1 !== y0) throw new Error(`tile ended at y=${y1}, started at y=${y0}`);
 });
 
@@ -238,12 +240,18 @@ if (engine === 'chromium') await check('the recorder saves a sound and turns the
     });
     await page.waitForFunction(() => window.__game.scene.getScene('Recorder').recording);
     if ((await micOn()) !== 1) throw new Error('microphone not on while recording');
-    await pause(1200);
+    // Chromium's pretend microphone beeps about once a second, so record long enough to catch one.
+    await pause(2500);
     await page.evaluate(() => window.__game.scene.getScene('Recorder').recUi.rec.emit('pointerup'));
     await page.waitForFunction(() => !window.__game.scene.getScene('Recorder').recording);
     if ((await micOn()) !== 0) throw new Error(`microphone still on after recording ${round + 1}`);
   }
-  await page.waitForFunction(() => window.__game.cache.audio.exists('narr:snd.s'), null, { timeout: 5000 });
+  const saved = await page.waitForFunction(() => window.__game.cache.audio.exists('narr:snd.s'), null, { timeout: 15000 })
+    .then(() => true, () => false);
+  if (!saved) {
+    const status = await page.evaluate(() => window.__game.scene.getScene('Recorder').modal?.list.find((o) => o.type === 'Text' && o.style.color === '#8e5cff')?.text);
+    throw new Error(`sound not saved; the recorder said: "${status}"`);
+  }
 });
 
 await check('the service worker caches every file and the game reloads offline', async (page, context) => {
