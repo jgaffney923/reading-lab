@@ -31,7 +31,7 @@ const TYPES = {
 };
 
 // A tiny static server. The game is only reachable from tests on "localhost".
-const server = createServer(async (req, res) => {
+async function serveFiles(req, res) {
   const path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^([/\\])+/, '');
   const file = path || 'index.html';
   try {
@@ -41,9 +41,14 @@ const server = createServer(async (req, res) => {
   } catch {
     res.writeHead(404).end();
   }
-});
-await new Promise((resolve) => server.listen(0, 'localhost', resolve));
-const base = `http://localhost:${server.address().port}/`;
+}
+
+async function startServer() {
+  const server = createServer(serveFiles);
+  await new Promise((resolve) => server.listen(0, 'localhost', resolve));
+  return { server, url: `http://localhost:${server.address().port}/` };
+}
+const { server, url: base } = await startServer();
 
 const browser = await browserType.launch(engine === 'chromium' ? {
   ...(process.env.PW_CHANNEL ? { channel: process.env.PW_CHANNEL } : {}),
@@ -254,8 +259,11 @@ if (engine === 'chromium') await check('the recorder saves a sound and turns the
   }
 });
 
-await check('the service worker caches every file and the game reloads offline', async (page, context) => {
-  await openGame(page, `${base}?sw=1`);
+// Offline is tested by shutting down a server of its own, which works in every
+// browser (Playwright's offline switch makes WebKit fail on reload).
+await check('the service worker caches every file and the game reloads offline', async (page) => {
+  const own = await startServer();
+  await openGame(page, `${own.url}?sw=1`);
   await page.evaluate(() => navigator.serviceWorker.ready);
   const { cached, wanted } = await page.evaluate(async () => {
     const reg = await navigator.serviceWorker.ready;
@@ -266,7 +274,8 @@ await check('the service worker caches every file and the game reloads offline',
     return { cached, wanted };
   });
   if (cached < wanted) throw new Error(`cached ${cached} of ${wanted} files`);
-  await context.setOffline(true);
+  own.server.closeAllConnections();
+  await new Promise((resolve) => own.server.close(resolve));
   await page.reload();
   await page.waitForFunction(() => window.__game?.scene.isActive('Boot'), null, { timeout: 10000 });
 });
