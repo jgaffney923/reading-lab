@@ -2,7 +2,7 @@
 // Run `node tools/update-sw.mjs` before each deploy: it rewrites the file list
 // below and bumps CACHE_VERSION so iPads pick up the new files.
 
-const CACHE_VERSION = 6;
+const CACHE_VERSION = 7;
 const CACHE_NAME = `reading-lab-v${CACHE_VERSION}`;
 
 // PRECACHE-START
@@ -16,6 +16,7 @@ const PRECACHE = [
   'index.html',
   'manifest.webmanifest',
   'src/art/chickens.js',
+  'src/data/farm.json',
   'src/data/narration.json',
   'src/data/phonics.json',
   'src/layout.js',
@@ -33,8 +34,9 @@ const PRECACHE = [
   'src/systems/save.js',
   'src/ui/button.js',
   'src/ui/effects.js',
-  'src/ui/energy.js',
   'src/ui/hand.js',
+  'src/ui/hen.js',
+  'src/ui/nest.js',
   'src/ui/parentCorner.js',
   'src/ui/praise.js',
   'src/ui/text.js',

@@ -15,7 +15,11 @@ export const COLORS = {
   consonant: 0x3d7bff,
   glow: 0xffcc00,
   purple: 0x8e5cff,
-  energy: 0x2fd6a8,
+  grass: 0x8fd16a,
+  grassDark: 0x6fb64c,
+  coop: 0xd9534f,
+  straw: 0xe3b75a,
+  shell: 0xfff4dc,
   shadow: 0x1d2a4a,
 };
 

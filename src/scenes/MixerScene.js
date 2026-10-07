@@ -1,11 +1,12 @@
-import { W, COLORS } from '../layout.js';
+import { W, H, COLORS } from '../layout.js';
 import { say, sayAll, blend, clip, stopNarration, sfx } from '../systems/audio.js';
 import { recordWord, currentSet, setCurrentSet, setPendingLevelUp, tipShown, markTipShown } from '../systems/save.js';
 import {
   chooseWords, lookAlikes, lettersOf, picture, sndId, wordId, isVowel, setOfWord, readyToMoveOn,
 } from '../systems/phonics.js';
 import { makeTile, makePictureCard } from '../ui/tile.js';
-import { makeEnergy } from '../ui/energy.js';
+import { makeNest } from '../ui/nest.js';
+import { makeHen, guideFor } from '../ui/hen.js';
 import { makeHand } from '../ui/hand.js';
 import { addHomeButton, addHintButton } from '../ui/button.js';
 import { burst } from '../ui/effects.js';
@@ -16,8 +17,8 @@ const IDLE_MS = 8000;
 const STEP = 320; // between letter tiles
 const TILE_Y = 470, DOT_Y = 700, ARROW_Y = 830, CARD_Y = 1200;
 
-// The core game (PLAN.md 5.1). A word appears as letter tiles with a sound
-// dot under each and an arrow under the whole word. He taps the letters (or
+// Egg Words, the core game (PLAN.md 5.1). A word appears as letter tiles with
+// a sound egg under each and an arrow under the whole word. Rhoda guides it. He taps the letters (or
 // slides along the arrow) to hear the sounds; only then do three pictures
 // appear, and he taps the one he read.
 export default class MixerScene extends Phaser.Scene {
@@ -29,7 +30,8 @@ export default class MixerScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor(COLORS.bg);
     addHomeButton(this);
     addHintButton(this, () => this.hint());
-    this.energy = makeEnergy(this, 130, ROUND);
+    this.nest = makeNest(this, 130, ROUND);
+    this.hen = makeHen(this, guideFor('words'), W - 180, H - 40, 300, { facing: 'left', onTap: (h) => h.cluck() });
     this.hand = makeHand(this);
 
     this.words = chooseWords(ROUND);
@@ -75,9 +77,10 @@ export default class MixerScene extends Phaser.Scene {
     });
     this.dots = this.letters.map((letter, i) => {
       const color = isVowel(letter) ? COLORS.vowel : COLORS.consonant;
-      const dot = this.add.circle(this.xs[i], DOT_Y, 40, 0xffffff).setStrokeStyle(12, color);
+      // An egg-shaped sound dot. Shapes measure their hit area from the top-left corner.
+      const dot = this.add.ellipse(this.xs[i], DOT_Y, 70, 92, 0xffffff).setStrokeStyle(12, color);
       dot.color = color;
-      dot.setInteractive(new Phaser.Geom.Circle(40, 40, 100), Phaser.Geom.Circle.Contains);
+      dot.setInteractive(new Phaser.Geom.Circle(35, 46, 100), Phaser.Geom.Circle.Contains);
       dot.on('pointerup', () => this.tapLetter(i));
       return dot;
     });
@@ -230,6 +233,7 @@ export default class MixerScene extends Phaser.Scene {
     this.state = 'busy';
     this.firstTry = false;
     sfx(this, 'soft');
+    this.hen.tilt();
     this.tweens.add({ targets: card, scale: 1.08, duration: 150, yoyo: true });
     // Interrupted lines (the iPad going to sleep) just move on; only leaving stops this.
     await sayAll(this, ['mixer.thatOne', wordId(card.word)]);
@@ -264,7 +268,8 @@ export default class MixerScene extends Phaser.Scene {
     await say(this, wordId(this.word));
     if (!this.alive()) return;
     burst(this, card.x, card.y);
-    this.energy.fill(this.index);
+    this.nest.lay(this.index);
+    this.hen.hop();
     await praise(this, this.firstTry);
     if (!this.alive()) return;
 

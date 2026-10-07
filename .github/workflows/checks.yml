@@ -35,8 +35,14 @@ jobs:
             exit 1
           fi
 
-      - name: Browser checks
+      - name: Browser checks (Chromium)
         run: |
           npm install -g playwright@1.56.1
           playwright install --with-deps chromium
           node tools/browser-check.mjs
+
+      # WebKit is Safari's engine, the closest thing to the iPad here.
+      - name: Browser checks (WebKit)
+        run: |
+          playwright install --with-deps webkit
+          PW_BROWSER=webkit node tools/browser-check.mjs

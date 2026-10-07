@@ -44,7 +44,7 @@ function takeWeighted(pool) {
   return pool.splice(index === -1 ? pool.length - 1 : index, 1)[0].value;
 }
 
-// Words for one Word Mixer round: mostly the current set, a few to review.
+// Words for one Egg Words round: mostly the current set, a few to review.
 export function chooseWords(count) {
   const set = currentSet();
   const pool = wordsUpTo(set).map((word) => ({
@@ -72,7 +72,7 @@ export function lookAlikes(word, count = 2) {
   return scored.sort((a, b) => b.score - a.score).slice(0, count).map(({ w }) => w);
 }
 
-// Letters for one Sound Lab round, never the same one twice in a row.
+// Letters for one Cluck Sounds round, never the same one twice in a row.
 export function chooseSounds(count) {
   const set = currentSet();
   const letters = [];

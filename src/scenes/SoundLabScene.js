@@ -3,7 +3,8 @@ import { say, sayAll, clip, stopNarration, sfx } from '../systems/audio.js';
 import { recordSound, tipShown, markTipShown } from '../systems/save.js';
 import { chooseSounds, soundLookAlikes, sndId } from '../systems/phonics.js';
 import { makeTile } from '../ui/tile.js';
-import { makeEnergy } from '../ui/energy.js';
+import { makeNest } from '../ui/nest.js';
+import { makeHen, guideFor } from '../ui/hen.js';
 import { addHomeButton, makeIconButton } from '../ui/button.js';
 import { bubbles } from '../ui/effects.js';
 import { praise } from '../ui/praise.js';
@@ -11,9 +12,10 @@ import { praise } from '../ui/praise.js';
 const ROUND = 6;
 const IDLE_MS = 9000;
 
-// "Find the letter that says mmm." Three letter flasks; whichever he taps says
-// its own sound. If it's another letter, the game says the sound again and the
-// right one glows, so every turn ends with him tapping the right letter.
+// Cluck Sounds: "Find the letter that says mmm." Three letters; whichever he
+// taps says its own sound. If it's another letter, the game says the sound
+// again and the right one glows, so every turn ends with him tapping the right
+// letter. Oreo guides it, and each right letter lays an egg in the nest.
 export default class SoundLabScene extends Phaser.Scene {
   constructor() {
     super('SoundLab');
@@ -22,7 +24,8 @@ export default class SoundLabScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor(COLORS.bg);
     addHomeButton(this);
-    this.energy = makeEnergy(this, 130, ROUND);
+    this.nest = makeNest(this, 130, ROUND);
+    this.hen = makeHen(this, guideFor('sounds'), 250, 1330, 380, { onTap: (h) => h.cluck() });
     this.speaker = makeIconButton(this, W / 2, 470, '🔊', () => this.ask(), { radius: 130, color: 0xfff3c4 });
 
     this.letters = chooseSounds(ROUND);
@@ -61,6 +64,7 @@ export default class SoundLabScene extends Phaser.Scene {
   ask() {
     if (this.state === 'busy') return;
     this.tweens.add({ targets: this.speaker, scale: 1.15, duration: 160, yoyo: true });
+    this.hen.peck();
     return sayAll(this, ['soundlab.find', sndId(this.target)]);
   }
 
@@ -85,6 +89,7 @@ export default class SoundLabScene extends Phaser.Scene {
     this.state = 'busy';
     this.firstTry = false;
     tile.hop();
+    this.hen.tilt();
     await say(this, sndId(tile.letter));
     if (!this.sys.isActive()) return;
     const target = this.tiles.find((t) => t.letter === this.target);
@@ -102,7 +107,8 @@ export default class SoundLabScene extends Phaser.Scene {
     sfx(this, 'bubble');
     bubbles(this, tile.x, tile.y - 120, { color: 0xffffff });
     this.tiles.filter((t) => t !== tile).forEach((t) => this.tweens.add({ targets: t, alpha: 0.25, duration: 300 }));
-    this.energy.fill(this.index);
+    this.nest.lay(this.index);
+    this.hen.hop();
     await say(this, sndId(this.target));
     if (!this.sys.isActive()) return;
     await praise(this, this.firstTry);

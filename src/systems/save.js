@@ -6,7 +6,7 @@
 
 const KEY = 'reading-lab-save-v1';
 const KEEP = 5; // results remembered per word or sound
-const SET_LOG = 10; // Word Mixer results remembered for the current set
+const SET_LOG = 10; // Egg Words results remembered for the current set
 
 const DEFAULTS = {
   sound: true,
@@ -14,7 +14,7 @@ const DEFAULTS = {
   setLog: [], // recent first-try results for words in the current set
   words: {}, // word -> recent first-try results
   sounds: {}, // letter -> recent first-try results
-  experiments: {}, // experiment type -> times launched
+  rewards: {}, // reward type (hatch, dance, feathers) -> times played
   tips: [], // one-time walkthroughs already given, by name
   levelUp: 0, // set just unlocked, celebrated on the home screen
 };
@@ -84,17 +84,17 @@ export function soundResults(letter) {
   return data.sounds[letter] || [];
 }
 
-export function addExperiment(type) {
-  data.experiments = { ...data.experiments, [type]: (data.experiments[type] || 0) + 1 };
+export function addReward(type) {
+  data.rewards = { ...data.rewards, [type]: (data.rewards[type] || 0) + 1 };
   persist();
 }
 
-export function experimentCounts() {
-  return data.experiments;
+export function rewardCounts() {
+  return data.rewards;
 }
 
-export function experimentTotal() {
-  return Object.values(data.experiments).reduce((a, b) => a + b, 0);
+export function rewardTotal() {
+  return Object.values(data.rewards).reduce((a, b) => a + b, 0);
 }
 
 export function tipShown(name) {
