@@ -37,6 +37,17 @@ Big tickets get a **design plan** first: `plan: needed` means Agent HQ's Archite
 9. **Commit messages:** `ticket <id>: <summary>`.
 10. **Only the owner sets `done`**, after reviewing and merging.
 
+## Content tickets
+
+A ticket with `kind: content` adds or changes facts, data, text or spoken lines rather than code (for example a batch of plant facts, word lists, or narration). On top of the rules above:
+
+- **Every fact has a source** you actually read: a link or a book and page, recorded where the app keeps sources. Prefer primary, reliable sources (government agencies, university extension services, recognised references).
+- **Your own words.** Never copy text from a source; facts aren't owned, but wording is.
+- **Never guess.** If no reliable source gives a value, leave it blank or mark it unknown, as the app does.
+- **Note disagreements.** When sources differ, record the range or each source's value, not an average you made up.
+- Follow the app's own data format and run its checks, as for any ticket.
+- Agent HQ reviews content tickets with a fact-check: the checker opens each cited source and confirms it says what the ticket claims.
+
 ## Log entries
 
 One line each, newest at the bottom:

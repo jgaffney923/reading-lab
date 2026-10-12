@@ -7,6 +7,7 @@ depends_on: []      # e.g. [0001, 0002]
 agent: any          # claude | copilot | any
 model:              # e.g. opus, sonnet, gpt-5.5; leave empty and Agent HQ's assign-tickets proposes one
 plan:               # needed = the Architect writes a design plan before anyone builds; done = it has one
+kind: code          # code | content (facts, data, text, spoken lines: researched, cited, and fact-checked)
 ---
 
 ## Goal
